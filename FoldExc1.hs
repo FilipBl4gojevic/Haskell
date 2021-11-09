@@ -1,6 +1,6 @@
 rev1 :: [a] -> [a]
---rev1 = foldl (\acc x -> x : acc) []
-rev1 = foldl (flip(:)) []
+rev1 = foldl (\acc x -> x : acc) []
+--rev1 = foldl (flip(:)) []
 
 -- for [1,2,3,4,5]
 -- foldl [1,2,3,4,5]

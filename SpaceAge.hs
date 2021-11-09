@@ -1,5 +1,5 @@
 module SpaceAge (Planet(..), ageOn) where
-
+import Data.List
 --Given an age in seconds, calculate how old someone would be on:
 
 --Mercury: orbital period 0.2408467 Earth years
@@ -20,13 +20,23 @@ data Planet = Mercury
             | Uranus
             | Neptune
 
-ageOn :: Planet -> Float -> Float
+type Planets = [(Planet, Float)]
 
-ageOn Mercury seconds = ageOn Earth seconds / 0.2408467
-ageOn Venus seconds = ageOn Earth seconds / 0.61519726
-ageOn Earth seconds= seconds / 31557600
-ageOn Mars seconds = ageOn Earth seconds / 1.8808158
-ageOn Jupiter seconds = ageOn Earth seconds / 11.862615
-ageOn Saturn seconds = ageOn Earth seconds / 29.447498
-ageOn Uranus seconds = ageOn Earth seconds / 84.016846
-ageOn Neptune seconds = ageOn Earth seconds / 164.79132
+orbPers :: Planets
+orbPers = [(Mercury, 0.2408467), (Venus, 0.61519726), (Earth, 1), (Mars, 1.8808158)]
+
+ageOn :: Planet -> Float -> Float
+ageOn p a = snd (head ((filter (p == fst) orbPers))) 
+
+--orbPer :: Planet -> Float
+--orbPer
+--    | Mercury = 0.2408467
+
+--ageOn Mercury seconds = ageOn Earth seconds / 0.2408467
+--ageOn Venus seconds = ageOn Earth seconds / 0.61519726
+--ageOn Earth seconds= seconds / 31557600
+--ageOn Mars seconds = ageOn Earth seconds / 1.8808158
+--ageOn Jupiter seconds = ageOn Earth seconds / 11.862615
+--ageOn Saturn seconds = ageOn Earth seconds / 29.447498
+--ageOn Uranus seconds = ageOn Earth seconds / 84.016846
+--ageOn Neptune seconds = ageOn Earth seconds / 164.79132
