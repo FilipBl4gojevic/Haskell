@@ -11,3 +11,10 @@ runLEnc [a] = [(a,1)]
 runLEnc (x:y:zs)
     |x /= y = (x,1) : runLEnc (y:zs)
 runLEnc _ = error "Something wrong"
+
+data Tree = Leaf
+            | Node Tree Int Tree
+    deriving Show
+
+dummyTree :: Tree
+dummyTree = Node (Node Leaf 2 Leaf) 1 () 
