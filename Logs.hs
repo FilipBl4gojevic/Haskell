@@ -55,6 +55,9 @@ data MessageTree = Leaf
     deriving (Show, Eq)
 
 testMessageTree = Leaf
+testMessageTree2 = Node Leaf (LogMessage (Error 12) 20 "test") (Node Leaf (LogMessage (Error 12) 151 "test") Leaf)
+testMessageTree3 = Node (Node Leaf (LogMessage (Error 12) 8 "test8") Leaf) (LogMessage (Error 12) 20 "test") (Node Leaf (LogMessage (Error 12) 151 "test") Leaf)
+testMessageTree4 = Node (Node Leaf (LogMessage (Error 12) 8 "test8") Leaf) (LogMessage (Error 12) 20 "test") Leaf
 
 -- insert inserts a logMessage into a tree and returns the new tree
 -- if the log message is of unknown type, return the tree as it is.
@@ -66,16 +69,58 @@ insert (Unknown _) a = a
 -- if the tree is empty, return the tree with one node
 insert (LogMessage mtype stamp text) Leaf = Node Leaf (LogMessage mtype stamp text) Leaf
 -- general case: when a new log message is entered, select left or right and recursively call until the bottom of the tree
-insert (LogMessage mtype stamp text) (Node leftTree (LogMessage _ currStamp _) rightTree)
-    | currStamp >= stamp = insert (LogMessage mtype stamp text) leftTree
-    | currStamp < stamp = insert (LogMessage mtype stamp text) rightTree
-
+insert (LogMessage mtype stamp text) (Node leftTree (LogMessage a currStamp b) rightTree)
+    | addLeft == True = Node (newNode (LogMessage mtype stamp text)) (LogMessage a currStamp b) rightTree
+    | addRight == True = Node leftTree (LogMessage a currStamp b) (newNode (LogMessage mtype stamp text))
+  where 
+    newNode :: LogMessage -> MessageTree
+    newNode (LogMessage mtype stamp text) = Node Leaf (LogMessage mtype stamp text) Leaf
+    addLeft = (currStamp >= stamp) && (leftTree == Leaf)
+    addRight = (currStamp < stamp) && (rightTree == Leaf)
 -- returns all the logs in increasing timestamp order
 -- Hint: Notice that the tree is a binary search tree, use the properties you know about them!
 inOrder :: MessageTree -> [LogMessage]
-inOrder = undefined
+inOrder Leaf = []
+inOrder (Node Leaf message Leaf) = [message]
+inOrder (Node Leaf message rightTree) = message : inOrder rightTree
+inOrder (Node leftTree message Leaf) = inOrder leftTree ++ [message]
+inOrder (Node leftTree message rightTree) = inOrder leftTree ++ [message] ++ inOrder rightTree
 
 -- prints the String from all Log messages that are of type Error and have severity > 50 (in increasing order of timestamp)
 -- Hint: This will use insert and inOrder
 whatWentWrong :: [LogMessage] -> [String]
-whatWentWrong = undefined
+whatWentWrong []= []
+whatWentWrong (Unknown _:xs) = whatWentWrong xs
+whatWentWrong (LogMessage (Error sev) time text :xs)
+  |sev > 50 = text : whatWentWrong xs
+  |otherwise = whatWentWrong xs
+whatWentWrong (LogMessage _ _ _ :xs) = whatWentWrong xs
+--whatWentWrong (LogMessage Warning _ _ :xs) = whatWentWrong xs
+--whatWentWrong (LogMessage (Error sev) time text :xs)
+--  |sev > 50 = text : whatWentWrong xs
+--  |otherwise = whatWentWrong xs
+
+--2. Write a function that replaces all leaves of a tree with (Node Leaf 1 Leaf)
+data Tree = Leaf2
+          | Node2 Tree Int Tree
+  deriving Show
+
+replaceLeaves :: Tree -> Tree
+replaceLeaves Leaf2 = Node2 Leaf2 1 Leaf2
+--replaceLeaves (Node2 lTree c rTree) = Node2 (newLTree (Node2 lTree c rTree)) c (newRTree (Node2 lTree c rTree))
+--replaceLeaves (Node2 lTree c rTree) = let newLeft = newLTree (Node2 lTree c rTree)
+--                                          newRight = newRTree (Node2 lTree c rTree)
+--                                      in Node2 newLeft c newRight
+--  where
+--    newLTree :: Tree -> Tree
+--    newLTree (Node2 lTree c rTree) = replaceLeaves lTree
+--    newRTree :: Tree -> Tree
+--    newRTree (Node2 lTree c rTree) = replaceLeaves rTree
+
+replaceLeaves (Node2 lTree c rTree) = Node2 (replaceLeaves lTree) c (replaceLeaves rTree)
+
+--1. Write a function that takes a tree and returns a new Tree with all the values in old tree increased by 1
+incTree :: Tree -> Tree
+incTree Leaf2 = Leaf2
+incTree (Node2 Leaf2 n Leaf2) = Node2 Leaf2 (n+1) Leaf2
+incTree (Node2 leftTree n rightTree) = Node2 (incTree leftTree) (n+1) (incTree rightTree)

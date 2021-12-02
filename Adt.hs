@@ -26,7 +26,7 @@ data Tree = Leaf
 
 dummyTree :: Tree
 dummyTree = Node (Node Leaf 2 Leaf) 50 (Node Leaf 3 (Node Leaf 42 Leaf))
-dummyTree2 = Node (Node Leaf 1 Leaf) 1 (Node Leaf 1 (Node Leaf 0 Leaf))
+dummyTree2 = Node (Node Leaf 3 Leaf) 1 (Node Leaf 1 (Node Leaf 2 Leaf))
 
 existsInTree :: Int -> Tree -> Bool
 existsInTree x Leaf = False
@@ -36,12 +36,19 @@ existsInTree x (Node left y right) = x == y || existsInTree x left || existsInTr
 -- If the tree is a leaf, return 0.
 largestInTree :: Tree -> Int
 largestInTree Leaf = 0
-largestInTree (Node left x right) 
-                                | (x >= largestInTree left) && (x >= largestInTree right) = x
-                                | largestInTree left >= largestInTree right = largestInTree left
-                                | largestInTree right > largestInTree left = largestInTree right
-                                | otherwise = error "Unexpected case"
+--largestInTree (Node left x right) 
+--                                | (x >= largestInTree left) && (x >= largestInTree right) = x
+--                                | largestInTree left >= largestInTree right = largestInTree left
+--                                | largestInTree right > largestInTree left = largestInTree right
+--                                | otherwise = error "Unexpected case"
 
+--largestInTree (Node left x right) 
+--                                | maximum [x, (largestInTree left), largestInTree(right)] == x = x
+--                                | maximum [x, (largestInTree left), largestInTree(right)] == largestInTree left = largestInTree left
+--                                | maximum [x, (largestInTree left), largestInTree(right)] == largestInTree right = largestInTree right
+--                                | otherwise = error "Unexpected case"
+
+largestInTree (Node left x right) = maximum [x, (largestInTree left), largestInTree(right)]
 -- EXERCISE: multiply all numbers in a tree
 prodTree :: Tree -> Int
 prodTree Leaf = 1
