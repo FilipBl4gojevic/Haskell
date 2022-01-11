@@ -23,6 +23,7 @@ testString = unlines [
   "E 55 250 yet another error"
    ]
 
+testString2 = unlines ["I 100 just an info"]
 -- Fill these in by hand.
 testLogMessages :: [LogMessage]
 testLogMessages = [
@@ -42,7 +43,27 @@ testLogMessages = [
 -- Use read to convert a string to an Int
 -- Doesn't have to be perfect, it's fine to make assumptions
 parseLog :: String -> [LogMessage]
-parseLog = undefined
+parseLog x = singleLine (singleLineList x) : []
+singleLineList :: String -> [String]
+singleLineList a = lines a
+singleLine :: [String] -> LogMessage
+singleLine (x:y:z:zs) = LogMessage mtype stamp text
+      where
+        mtype
+          | x == "I" = Info
+          | x == "W" = Warning
+          | x == "E" = Error (read y)
+--          | otherwise = Unknown
+        stamp
+          | x == "I" = read y
+          | x == "W" = read y
+          | x == "E" = read z
+        text
+          | x == "I" = unwords (z:zs)
+          | x == "W" = unwords (z:zs)
+          | x == "E" = unwords (zs)
+
+singleLine zs = Unknown (unwords zs)
 
 -- to this parseLog, parseLog testString == testLogMessages
 
