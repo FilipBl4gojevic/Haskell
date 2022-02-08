@@ -145,3 +145,5 @@ incTree :: Tree -> Tree
 incTree Leaf2 = Leaf2
 incTree (Node2 Leaf2 n Leaf2) = Node2 Leaf2 (n+1) Leaf2
 incTree (Node2 leftTree n rightTree) = Node2 (incTree leftTree) (n+1) (incTree rightTree)
+
+data Color = Color String
