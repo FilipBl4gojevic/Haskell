@@ -17,3 +17,10 @@ instance Num X where
     signum _ = Odd
     fromInteger n | even n = Even
                   | otherwise = Odd
+
+-- Point of typeclasses is to have less details, to abstract them away
+-- Less details is good! Num doesn't have a lot of details, but
+-- Int, Float, Integer do!
+
+getLineLength :: IO Int
+getLineLength = fmap length getLine 
