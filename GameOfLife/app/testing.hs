@@ -11,7 +11,8 @@ module Testing where
   
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Interact
-
+import Control.Monad.Trans.State.Strict
+ 
 -- Cell can be alive or dead
 data Life = Dead
           | Alive
@@ -34,8 +35,10 @@ board1 = [((1,1), Alive), ((2,1), Dead), ((3,1), Dead), ((4,1), Dead), ((5,1), D
           ((1,4), Dead), ((2,4), Dead), ((3,4), Alive), ((4,4), Alive), ((5,4), Dead),
           ((1,5), Dead), ((2,5), Dead), ((3,5), Dead), ((4,5), Dead), ((5,5), Alive)]
 
-initialState :: Int -> Int -> Board
-initialState x y = [((x, y), Dead)| x<- [1..x], y<-[1..y]]
+------------------------------------------------------------------------------------------------
+
+initialState :: Board
+initialState = [((x, y), Dead)| x<- [1..500], y<-[1..500]]
 
 pointState :: Cell -> Cell
 pointState (loc, state)
@@ -51,71 +54,14 @@ neighboursAlive ((x,y), state) (((xb,yb), boardState) : board) counter
   | otherwise = neighboursAlive ((x,y), state) board counter
 
 nextStep :: Board -> Board
-nextStep board = map pointState board -- ????
- 
----------------------------------------------------------------------------------------------------------------------------------------
---Drawing
-width, height, offset :: Int
-width = 1000
-height = 1000
-offset = 500
+nextStep board = map pointState board
 
-window :: Display
-window = InWindow "Conway's Game Of Life" (width, height) (offset, offset)
+boardAsMonad :: State Board ()
+boardAsMonad = do
+  currBoard <- get
+  counter <- get
+  put (nextStep currBoard)
 
-backgroundColor :: Color
-backgroundColor = greyN 0.8
+run = runState boardAsMonad board1
 
-drawing :: Picture
---drawing = translate (-490) (490) (rectangleWire 10 10)
-drawing = Pictures [(translate (-490) (490) (rectangleWire 10 10)), (translate (-480) (490) (rectangleWire 10 10)) ]
-test :: IO ()
-test = display window backgroundColor drawing
-  {-
-  ((1,5), Dead), ((2,5), Dead), ((3,5), Dead), ((4,5), Dead), ((5,5), Alive)
-  ((1,4), Dead), ((2,4), Dead), ((3,4), Alive), ((4,4), Alive), ((5,4), Dead)
-  ((1,3), Dead), ((2,3), Dead), ((3,3), Alive), ((4,3), Dead), ((5,3), Dead)
-  ((1,2), Dead), ((2,2), Alive), ((3,2), Dead), ((4,2), Dead), ((5,2), Dead)
-  ((1,1), Alive), ((2,1), Dead), ((3,1), Dead), ((4,1), Dead), ((5,1), Dead)-}
 
-{-}:: Display	
-Display mode.
-
--> Color	= backgroundColor
-Background color.
-
--> Int	= fps
-Number of simulation steps to take for each second of real time.
-
--> world	= initialBoard
-The initial world.
-
--> (world -> Picture)	= boardAsPicture
-A function to convert the world a picture.
-
--> (Event -> world -> world)	= inputEvent
-A function to handle input events.
-
--> (Float -> world -> world)	= nextState
-A function to step the world one iteration. It is passed the period of time (in seconds) needing to be advanced.
-
--> IO ()-}
-fps :: Int
-fps = 30
-
-initialBoard :: Board
-initialBoard = initialState 100 100
-
-currentBoard :: Board
-currentBoard = undefined
-
-boardAsPicture :: Board -> Picture
-boardAsPicture = undefined
-
-inputEvent :: Event -> Board -> Board
-inputEvent (EventKey (SpecialKey KeySpace) Up _ currentBoard) = undefined
-
-nextState :: Float -> Board -> Board
-nextState = undefined
-
-playGame = play window backgroundColor fps initialBoard boardAsPicture inputEvent nextState
