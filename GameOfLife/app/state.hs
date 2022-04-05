@@ -4,6 +4,11 @@ import Control.Monad.Trans.State.Strict
 import Control.Monad.Trans.Reader
 import Debug.Trace
 import Control.Monad.Trans.Writer.Strict
+import System.Random
+
+main = do
+  g <- newStdGen
+  print . take 10 $ (randomRs ('a', 'z') g)
 tick :: State Int Int
 tick = do n <- get
           put (n+1)

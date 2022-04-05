@@ -12,6 +12,7 @@ module Testing where
 import Graphics.Gloss.Interface.IO.Interact-}
 import Control.Monad.Trans.RWS.Strict
 import Data.Text
+import System.Random
 
 -- Cell can be alive or dead
 data Life = Dead
@@ -36,10 +37,31 @@ board1 = [((1,1), Alive), ((2,1), Dead), ((3,1), Dead), ((4,1), Dead), ((5,1), D
           ((1,5), Dead), ((2,5), Dead), ((3,5), Dead), ((4,5), Dead), ((5,5), Alive)]
 
 ------------------------------------------------------------------------------------------------
+-- Random function
+randomList :: Int -> [Int] 
+randomList gen =
+    Prelude.take 250000 $ randomRs (0, 1) (mkStdGen gen)
 
-initialState :: Board
-initialState = [((x, y), Dead)| x<- [1..500], y<-[1..500]]
+intToLife :: Int -> Life
+intToLife x
+  | x == 0 = Dead
+  | x == 1 = Alive
 
+randomCell :: [Life]
+randomCell = Prelude.take 250000 (Prelude.map intToLife (randomList 52))
+
+deadBoard :: Board
+deadBoard = [((x, y), Dead)| x<- [1..500], y<-[1..500]]
+
+initialState :: Board -> [Life] -> Board
+initialState (((x,y),s):bs) (l:ls)
+  | s == l && bs /= [] = ((x,y),s) : replace' bs ls
+  | s == l && bs == [] = ((x,y),s) : []
+  | s == Dead && l == Alive && bs /= [] = ((x,y), Alive) : replace' bs ls
+  | s == Dead && l == Alive && bs == [] = ((x,y), Alive) : []
+  | otherwise = []
+
+------------------------------------------------------------------------------------------------
 pointState :: Cell -> Cell
 pointState (loc, state)
   | (state == Dead) && (neighboursAlive (loc,state) board1 0 == 3) = (loc, Alive)
@@ -56,16 +78,14 @@ neighboursAlive ((x,y), state) (((xb,yb), boardState) : board) counter
 nextStep :: Board -> Board
 nextStep = Prelude.map pointState
 
-{-boardAsMonad :: State Board ()
-boardAsMonad = do
-  currBoard <- get
-  put (nextStep currBoard)-}
-
-boardAsMonad' :: RWST Board Text (Board, Int) IO ()
+boardAsMonad' :: RWST Board Text (Board, Int) IO () -- identity instead of IO
 boardAsMonad' = do
   (currBoard, counter) <- get
   tell (pack "Current iteration is: ")
   tell (pack (show counter))
   put (nextStep currBoard, counter +1)
+  -- gloss function here
+  -- pause
+  -- 
 
-run = evalRWST boardAsMonad' board1
+run = runRWST boardAsMonad' deadBoard (deadBoard, 0)

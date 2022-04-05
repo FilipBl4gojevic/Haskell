@@ -1,14 +1,15 @@
-newtype State s a = State (s -> (a, s))
+import System.Random
 
-runState :: State s a -> s -> (a, s)
-runState (State f) state = f state
+randomList :: StdGen -> Int -> [Int] 
+randomList gen size =
+    take size $ randomRs (0, 1) gen
 
-addOneToState :: State Int ()
-addOneToState = State f
-  where
-    f state = ((), state + 1)
+randomMatrix :: StdGen -> Int -> Int -> [[Int]]
+randomMatrix gen sizeX sizeY =
+    take sizeY $ repeat $ randomList gen sizeX
 
-stateExample = runState addOneToState 5
-
-statePlusFive :: State Int Int 
-statePlusFive = State (\s -> (s+5,s+5))
+rand = do
+    gen <- getStdGen
+    putStr $ take 20 (randomRs ('a','z') gen)
+    --print $ randomList gen 10
+    print $ randomMatrix gen 3 3

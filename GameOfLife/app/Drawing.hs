@@ -5,8 +5,8 @@ import Testing
 --------------------------------------------------------------------------------------------------------------------------------------
 --Drawing
 width, height, offset :: Int
-width = 1000
-height = 1000
+width = 1100
+height = 1100
 offset = 500
 
 window :: Display
@@ -15,9 +15,12 @@ window = InWindow "Conway's Game Of Life" (width, height) (offset, offset)
 backgroundColor :: Color
 backgroundColor = greyN 0.8
 
-drawing :: Picture
+--drawing :: Picture
 --drawing = translate (-490) (490) (rectangleWire 10 10)
-drawing = Pictures [(translate (-490) (490) (rectangleWire 10 10)), (translate (-480) (490) (rectangleWire 10 10)) ]
+--drawing = Pictures [(translate (-490) (490) (rectangleWire 10 10)), (translate (-480) (490) (rectangleWire 10 10)) ]
+drawing :: Picture
+drawing = Pictures [translate x y (rectangleWire 10 10)| x<- [-490, -480..500], y<-[-490, -480..500]]
+
 test :: IO ()
 test = display window backgroundColor drawing
   {-
@@ -53,20 +56,12 @@ fps :: Int
 fps = 30
 
 initialBoard :: Board
-initialBoard = initialState
-
-currentBoard :: Board
-currentBoard = undefined
+initialBoard = initialState deadBoard randomCell
 
 boardAsPicture :: Board -> Picture
 boardAsPicture = undefined
 
-inputEvent :: Event -> Board -> Board
-inputEvent (EventKey (SpecialKey KeySpace) Up _ currentBoard) = undefined
-
-nextState :: Float -> Board -> Board
-nextState = undefined
-
-playGame = play window backgroundColor fps initialBoard boardAsPicture inputEvent nextState
-
 --simulateGame = simulate window backgroundColor fps initialBoard boardAsPicture (ViewPort -> Float -> model -> model)
+-- Print 10 states 10.to.1 to try
+
+simulateGame = simulate window backgroundColor fps initialBoard boardAsPicture (ViewPort -> Float -> model -> model)
