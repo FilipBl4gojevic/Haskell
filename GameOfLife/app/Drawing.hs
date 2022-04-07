@@ -1,6 +1,7 @@
 module Drawing where
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Interact
+import Graphics.Gloss.Data.ViewPort
 import Testing
 --------------------------------------------------------------------------------------------------------------------------------------
 --Drawing
@@ -59,7 +60,7 @@ initialBoard :: Board
 initialBoard = initialState deadBoard randomCell
 
 boardAsPicture :: Board -> Picture
-boardAsPicture = undefined
+boardAsPicture = undefined -- ??
 
 update :: ViewPort -> Float -> Board -> Board 
 update _ 1 = nextStep 

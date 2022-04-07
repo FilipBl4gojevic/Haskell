@@ -55,9 +55,9 @@ deadBoard = [((x, y), Dead)| x<- [1..500], y<-[1..500]]
 
 initialState :: Board -> [Life] -> Board
 initialState (((x,y),s):bs) (l:ls)
-  | s == l && bs /= [] = ((x,y),s) : replace' bs ls
+  | s == l && bs /= [] = ((x,y),s) : initialState bs ls
   | s == l && bs == [] = ((x,y),s) : []
-  | s == Dead && l == Alive && bs /= [] = ((x,y), Alive) : replace' bs ls
+  | s == Dead && l == Alive && bs /= [] = ((x,y), Alive) : initialState bs ls
   | s == Dead && l == Alive && bs == [] = ((x,y), Alive) : []
   | otherwise = []
 
