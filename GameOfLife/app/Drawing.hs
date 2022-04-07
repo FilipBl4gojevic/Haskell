@@ -61,7 +61,9 @@ initialBoard = initialState deadBoard randomCell
 boardAsPicture :: Board -> Picture
 boardAsPicture = undefined
 
+update :: ViewPort -> Float -> Board -> Board 
+update _ 1 = nextStep 
 --simulateGame = simulate window backgroundColor fps initialBoard boardAsPicture (ViewPort -> Float -> model -> model)
 -- Print 10 states 10.to.1 to try
 
-simulateGame = simulate window backgroundColor fps initialBoard boardAsPicture (ViewPort -> Float -> model -> model)
+simulateGame = simulate window backgroundColor fps initialBoard boardAsPicture update
